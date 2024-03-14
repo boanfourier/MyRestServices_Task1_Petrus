@@ -5,7 +5,7 @@ using MyWebFormApp.BLL.DTOs;
 using MyWebFormApp.BLL.Interfaces;
 using MyWebFormApp.BO;
 
-namespace MyRESTServices.Controllers
+namespace MyWebFormApp.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

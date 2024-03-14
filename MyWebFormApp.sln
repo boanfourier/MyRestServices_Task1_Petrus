@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyWebFormApp.BLL", "MyWebFo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleMVC", "SampleMVC\SampleMVC.csproj", "{8B45C05A-90F2-4D2B-B3A2-52CCC02784DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyRESTServices", "MyWebFormApp.API\MyRESTServices.csproj", "{6FF1F411-8991-4235-BC6F-1E4009E614DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyWebFormApp.API", "MyWebFormApp.API\MyWebFormApp.API.csproj", "{6FF1F411-8991-4235-BC6F-1E4009E614DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
