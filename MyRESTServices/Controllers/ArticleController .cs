@@ -1,21 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MyRESTServices.BLL.DTOs;
 using MyRESTServices.BLL.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MyRESTServices.Data.Interfaces;
+using MyRESTServices.Domain.Models;
 
 namespace MyRESTServices.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ArticleController : ControllerBase
     {
         private readonly IArticleBLL _articleBLL;
+        private readonly IValidator<ArticleCreateDTO> _validatorArticleCreate;
+        private readonly IValidator<ArticleUpdateDTO> _validatorArticleUpdate;
 
-        public ArticleController(IArticleBLL articleBLL)
+        public ArticleController(IArticleBLL articleBLL,
+            IValidator<ArticleCreateDTO> validatorArticleCreate,
+            IValidator<ArticleUpdateDTO> validatorArticleUpdate
+            )
         {
             _articleBLL = articleBLL ?? throw new ArgumentNullException(nameof(articleBLL));
+            _validatorArticleCreate = validatorArticleCreate;
+            _validatorArticleUpdate = validatorArticleUpdate;
         }
 
         // GET: api/<ArticleController>
@@ -42,8 +51,28 @@ namespace MyRESTServices.Controllers
         [HttpPost]
         public async Task<ActionResult<ArticleDTO>> Post([FromBody] ArticleCreateDTO article)
         {
-            var insertedArticle = await _articleBLL.Insert(article);
-            return CreatedAtAction(nameof(Get), new { id = insertedArticle.ArticleID }, insertedArticle);
+            if (article == null)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var validatorResult = await _validatorArticleCreate.ValidateAsync(article);
+                if (!validatorResult.IsValid)
+                {
+                    Helpers.Extensions.AddToModelState(validatorResult, ModelState);
+                    return BadRequest(ModelState);
+                }
+                var insertedArticle = await _articleBLL.Insert(article);
+                return CreatedAtAction(nameof(Get), new { id = insertedArticle.ArticleID }, insertedArticle);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
         }
 
         // PUT api/<ArticleController>/5
@@ -55,13 +84,26 @@ namespace MyRESTServices.Controllers
                 return BadRequest();
             }
 
-            var updatedArticle = await _articleBLL.Update(article);
-            if (updatedArticle == null)
+            try
             {
-                return NotFound();
-            }
+                var validatorResult = await _validatorArticleUpdate.ValidateAsync(article);
+                if (!validatorResult.IsValid)
+                {
+                    Helpers.Extensions.AddToModelState(validatorResult, ModelState);
+                    return BadRequest(ModelState);
+                }
+                var updatedArticle = await _articleBLL.Update(article);
+                if (updatedArticle == null)
+                {
+                    return NotFound();
+                }
 
-            return NoContent();
+                return Ok("Update data success");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<ArticleController>/5
