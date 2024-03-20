@@ -6,6 +6,8 @@ namespace MyRESTServices.BLL.DTOs.Validation
     {
         public CategoryUpdateDTOValidator()
         {
+            RuleFor(x => x.CategoryId).NotEmpty().WithMessage("Category ID harus diisi");
+
             RuleFor(x => x.CategoryName).NotEmpty().WithMessage("Category Name harus diisi");
         }
     }
